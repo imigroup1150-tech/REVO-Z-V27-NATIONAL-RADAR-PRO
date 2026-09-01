@@ -1,0 +1,11 @@
+{
+  "schema":"REVO-Z-NATIONAL-RADAR-V27",
+  "country":"TH",
+  "buildRequired":true,
+  "generatedAt":null,
+  "totalPoints":0,
+  "counts":{},
+  "tileSize":1,
+  "tiles":[],
+  "coverageNote":"Placeholder only. Netlify build MUST replace this file with real Thailand OSM tiles before deployment is considered successful. The app refuses to treat an empty manifest as a valid national database."
+}
