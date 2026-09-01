@@ -1,0 +1,9 @@
+{
+  "name":"revo-z-national-radar-v27",
+  "private":true,
+  "version":"27.0.0",
+  "type":"module",
+  "scripts":{"build":"node scripts/build-national.mjs","build-national":"node scripts/build-national.mjs"},
+  "engines":{"node":">=20"},
+  "dependencies":{"@netlify/blobs":"11.0.2"}
+}

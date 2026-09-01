@@ -1,0 +1,36 @@
+{
+  "country": "TH",
+  "source": "OpenStreetMap via Geo2day Thailand extract",
+  "snapshot": "2026-08-30T23:00:00Z",
+  "file_size_mb": 353.89,
+  "coverage_note": "These are OSM-mapped object counts, not a guaranteed census of every real-world object in Thailand.",
+  "counts": {
+    "police": 989,
+    "traffic_signals": 5467,
+    "crossings": 7909,
+    "speed_camera": 27,
+    "schools_kindergartens_building_polygons": 2175,
+    "road_construction_lines": 1134,
+    "amenity_points_total": 87107,
+    "roads_total": 2720717
+  },
+  "not_equivalent_to_reality": [
+    "27 speed cameras does not mean Thailand has only 27 physical cameras; it means 27 OSM objects matched the extractor's speed-camera tag at this snapshot.",
+    "No single OSM/Thai open-data source found here provides authoritative nationwide live totals for accident, congestion, road closure, flood and checkpoint states at the same instant."
+  ],
+  "official_open_data_examples": [
+    {
+      "name": "จุดเสี่ยงอุบัติเหตุทางถนน",
+      "publisher": "data.go.th",
+      "last_metadata_update": "2026-08-14",
+      "geographic_scope": "อำเภอ",
+      "frequency": "รายปี"
+    },
+    {
+      "name": "จุดตั้งด่านทางจราจร",
+      "publisher": "data.go.th",
+      "last_update": "2026-05-02",
+      "notes": "Dataset describes festival checkpoint arrangements; it is not a permanent all-TH live checkpoint feed."
+    }
+  ]
+}

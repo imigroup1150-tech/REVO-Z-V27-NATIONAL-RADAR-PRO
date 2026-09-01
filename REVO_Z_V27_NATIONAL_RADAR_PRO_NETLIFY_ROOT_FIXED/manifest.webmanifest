@@ -1,0 +1,11 @@
+{
+  "name": "REVO Z Smart Dashboard",
+  "short_name": "REVO Z",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05070d",
+  "theme_color": "#05070d",
+  "description": "REVO Z telematics, GPS trip logging and national radar dashboard"
+}
