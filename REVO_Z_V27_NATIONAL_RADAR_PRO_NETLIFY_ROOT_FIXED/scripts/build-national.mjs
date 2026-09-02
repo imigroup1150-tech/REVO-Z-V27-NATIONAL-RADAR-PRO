@@ -135,9 +135,24 @@ function infer(el){
     confidence:cat==='speedcamera'?(t.highway==='speed_camera'||t.man_made==='speed_camera'?'high':'medium'):'standard'};
 }
 async function fetchOverpass(url,query){
-  const c=new AbortController(); const tm=setTimeout(()=>c.abort(),115000);
-  try{const r=await fetch(url,{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded','accept':'application/json'},body:`data=${encodeURIComponent(query)}`,signal:c.signal});
-    if(!r.ok) throw new Error(`HTTP ${r.status}`); const j=await r.json(); if(!Array.isArray(j.elements)) throw new Error('invalid Overpass response'); return j;
+  // ลดเวลา Timeout จาก 115000 เหลือ 20000 (20 วินาที) เพื่อให้สลับไปดึงข้อมูลจากลิงก์สำรองได้เร็วขึ้น ไม่ค้าง
+  const c=new AbortController(); const tm=setTimeout(()=>c.abort(), 20000); 
+  try{
+    const r=await fetch(url,{
+      method:'POST',
+      headers:{
+        'content-type':'application/x-www-form-urlencoded',
+        'accept':'application/json',
+        // เพิ่ม User-Agent เพื่อป้องกัน Error 406 จาก API ปลายทาง
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      },
+      body:query,
+      signal:c.signal
+    });
+    if(!r.ok) throw new Error(`HTTP ${r.status}`); 
+    const j=await r.json(); 
+    if(!Array.isArray(j.elements)) throw new Error('Invalid JSON'); 
+    return j;
   }finally{clearTimeout(tm)}
 }
 async function fetchTask(group,b,idx){
