@@ -134,7 +134,6 @@ function infer(el){
     limit:Number(t.maxspeed)||Number(t['maxspeed:forward'])||null,operator:t.operator||t.brand||'',ref:t.ref||'',
     confidence:cat==='speedcamera'?(t.highway==='speed_camera'||t.man_made==='speed_camera'?'high':'medium'):'standard'};
 }
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function fetchoverpass(url, query, retries = 2) {
   const headers = {
