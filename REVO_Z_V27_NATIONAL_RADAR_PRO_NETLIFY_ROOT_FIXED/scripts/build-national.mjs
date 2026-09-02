@@ -181,7 +181,10 @@ async function main(){
     }
   });
   await Promise.all(workers);
-
+if (all.size === 0) {
+  console.warn('⚠️ ไม่พบข้อมูลจากทุกโซน ข้ามการสร้างไฟล์เพื่อป้องกันระบบล่ม');
+  return;
+}
   //if(all.size<1000 || failures>Math.floor(tasks.length*0.5)){
     //throw new Error(`National build refused: only ${all.size} usable points, ${failures} task failures. No empty/incomplete national dataset will be published.`);
   //}
