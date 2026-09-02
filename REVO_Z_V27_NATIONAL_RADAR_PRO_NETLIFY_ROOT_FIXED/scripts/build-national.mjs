@@ -134,35 +134,59 @@ function infer(el){
     limit:Number(t.maxspeed)||Number(t['maxspeed:forward'])||null,operator:t.operator||t.brand||'',ref:t.ref||'',
     confidence:cat==='speedcamera'?(t.highway==='speed_camera'||t.man_made==='speed_camera'?'high':'medium'):'standard'};
 }
-async function fetchOverpass(url,query){
-  // ลดเวลา Timeout จาก 115000 เหลือ 20000 (20 วินาที) เพื่อให้สลับไปดึงข้อมูลจากลิงก์สำรองได้เร็วขึ้น ไม่ค้าง
-  const c=new AbortController(); const tm=setTimeout(()=>c.abort(), 20000); 
-  try{
-    const r=await fetch(url,{
-      method:'POST',
-      headers:{
-        'content-type':'application/x-www-form-urlencoded',
-        'accept':'application/json',
-        // เพิ่ม User-Agent เพื่อป้องกัน Error 406 จาก API ปลายทาง
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-      },
-      body:query,
-      signal:c.signal
-    });
-    if(!r.ok) throw new Error(`HTTP ${r.status}`); 
-    const j=await r.json(); 
-    if(!Array.isArray(j.elements)) throw new Error('Invalid JSON'); 
-    return j;
-  }finally{clearTimeout(tm)}
-}
-async function fetchTask(group,b,idx){
-  let last='';
-  const rot=[...HOSTS.slice(idx%HOSTS.length),...HOSTS.slice(0,idx%HOSTS.length)];
-  for(let pass=0;pass<2;pass++) for(const h of rot){
-    try{return await fetchOverpass(h,makeQuery(group,b));}
-    catch(e){last=String(e?.message||e); await sleep(400);}
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function fetchoverpass(url, query, retries = 2) {
+  const headers = {
+    'content-type': 'application/x-www-form-urlencoded',
+    'accept': 'application/json, text/plain, */*',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Accept-Language': 'th-TH,th;q=0.9,en-US;q=0.8,en;q=0.7',
+  };
+
+  for (let i = 0; i <= retries; i++) {
+    const c = new AbortController();
+    const tm = setTimeout(() => c.abort(), 20000);
+    try {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: query,
+        signal: c.signal
+      });
+      clearTimeout(tm);
+      
+      if (!r.ok) {
+        throw new Error(`HTTP error! status: ${r.status}`);
+      }
+      
+      const j = await r.json();
+      if (!Array.isArray(j.elements)) throw new Error('Invalid JSON');
+      return j;
+    } catch (error) {
+      clearTimeout(tm);
+      if (i === retries) {
+        throw error;
+      }
+      await sleep(2000); // รอ 2 วินาทีก่อนลองเชื่อมต่อใหม่
+    }
   }
-  throw new Error(last||'all mirrors failed');
+}
+
+async function fetchTask(group, b, idx) {
+  let last = '';
+  const rot = [...HOSTS.slice(idx % HOSTS.length), ...HOSTS.slice(0, idx % HOSTS.length)];
+  for (let pass = 0; pass < 2; pass++) {
+    for (const h of rot) {
+      try {
+        return await fetchoverpass(h, makeQuery(group, b));
+      } catch (e) {
+        last = String(e.message || e);
+        await sleep(1500); // หน่วงเวลาก่อนสลับไปใช้ Host สำรอง
+      }
+    }
+  }
+  throw new Error(last || 'all mirrors failed');
 }
 
 async function main(){
