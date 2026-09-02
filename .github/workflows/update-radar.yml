@@ -1,0 +1,27 @@
+name: Update National Radar Data
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # ตั้งเวลาให้ระบบอัปเดตข้อมูลอัตโนมัติทุกวันตอนเที่ยงคืน
+  workflow_dispatch: # ปุ่มสำหรับกดสั่งอัปเดตด้วยตัวเองเวลาต้องการ
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Dependencies
+        run: npm install
+      - name: Fetch National Data
+        run: node scripts/build-national.mjs
+      - name: Commit and Push Data
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Auto-update national radar data" || exit 0
+          git push
